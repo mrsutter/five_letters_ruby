@@ -1,0 +1,20 @@
+base: &base
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV.fetch('FL_RUBY_DB_HOST') %>
+  port: <%= ENV.fetch('FL_RUBY_DB_PORT') %>
+  pool: <%= ENV.fetch('FL_RUBY_DB_POOL_SIZE') { 5 } %>
+  username: <%= ENV.fetch('FL_RUBY_DB_USER') %>
+  password: <%= ENV.fetch('FL_RUBY_DB_PASSWORD') %>
+
+production:
+  <<: *base
+  database: <%= ENV.fetch('FL_RUBY_DB') %>
+
+development:
+  <<: *base
+  database: <%= ENV.fetch('FL_RUBY_DB') %>
+
+test:
+  <<: *base
+  database: five_letters_ruby_test

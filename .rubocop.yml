@@ -1,0 +1,14 @@
+require: rubocop-rspec
+
+AllCops:
+  Exclude:
+    - bin/*
+
+Style/Documentation:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 15
+
+RSpec/MultipleExpectations:
+  Max: 10
