@@ -26,6 +26,23 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
+-- Name: attempts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.attempts (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    number integer NOT NULL,
+    word character varying NOT NULL,
+    result character varying[] NOT NULL,
+    game_id uuid NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT cr_attempts_number CHECK (((number >= 1) AND (number <= 6))),
+    CONSTRAINT cr_attempts_word_length CHECK ((length((word)::text) = 5))
+);
+
+
+--
 -- Name: games; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -121,6 +138,14 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 
 --
+-- Name: attempts attempts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.attempts
+    ADD CONSTRAINT attempts_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: games games_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -166,6 +191,20 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.words
     ADD CONSTRAINT words_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_attempts_on_game_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_attempts_on_game_id ON public.attempts USING btree (game_id);
+
+
+--
+-- Name: index_attempts_on_game_id_and_number; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_attempts_on_game_id_and_number ON public.attempts USING btree (game_id, number);
 
 
 --
@@ -285,6 +324,14 @@ ALTER TABLE ONLY public.words
 
 
 --
+-- Name: attempts fk_rails_c272f3b87e; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.attempts
+    ADD CONSTRAINT fk_rails_c272f3b87e FOREIGN KEY (game_id) REFERENCES public.games(id);
+
+
+--
 -- Name: games fk_rails_de9e6ea7f7; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -314,6 +361,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230505041410'),
 ('20230505045700'),
 ('20230505051244'),
-('20230505053135');
+('20230505053135'),
+('20230505060800'),
+('20230505061259'),
+('20230505061557');
 
 

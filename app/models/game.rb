@@ -8,6 +8,7 @@ class Game < ApplicationRecord
 
   belongs_to :user
   belongs_to :word
+  has_many :attempts
 
   validates :attempts_count,
             numericality: { only_integer: true, in: 0..MAX_ATTEMPTS_COUNT }
