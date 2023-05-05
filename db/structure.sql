@@ -26,6 +26,22 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
+-- Name: games; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.games (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    attempts_count integer DEFAULT 0 NOT NULL,
+    state character varying DEFAULT 'active'::character varying NOT NULL,
+    user_id uuid NOT NULL,
+    word_id uuid NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT cr_games_state CHECK (((state)::text = ANY ((ARRAY['active'::character varying, 'wasted'::character varying, 'won'::character varying])::text[])))
+);
+
+
+--
 -- Name: languages; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -105,6 +121,14 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 
 --
+-- Name: games games_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.games
+    ADD CONSTRAINT games_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: languages languages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -142,6 +166,27 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.words
     ADD CONSTRAINT words_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_games_active_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_games_active_on_user_id ON public.games USING btree (user_id) WHERE ((state)::text = 'active'::text);
+
+
+--
+-- Name: index_games_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_games_on_user_id ON public.games USING btree (user_id);
+
+
+--
+-- Name: index_games_on_word_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_games_on_word_id ON public.games USING btree (word_id);
 
 
 --
@@ -216,6 +261,14 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: games fk_rails_5dc53fe1dd; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.games
+    ADD CONSTRAINT fk_rails_5dc53fe1dd FOREIGN KEY (word_id) REFERENCES public.words(id);
+
+
+--
 -- Name: tokens fk_rails_ac8a5d0441; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -229,6 +282,14 @@ ALTER TABLE ONLY public.tokens
 
 ALTER TABLE ONLY public.words
     ADD CONSTRAINT fk_rails_b80de9677b FOREIGN KEY (language_id) REFERENCES public.languages(id);
+
+
+--
+-- Name: games fk_rails_de9e6ea7f7; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.games
+    ADD CONSTRAINT fk_rails_de9e6ea7f7 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -251,6 +312,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230504124615'),
 ('20230505033630'),
 ('20230505041410'),
-('20230505045700');
+('20230505045700'),
+('20230505051244'),
+('20230505053135');
 
 
