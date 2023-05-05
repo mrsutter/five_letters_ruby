@@ -7,8 +7,17 @@ AllCops:
 Style/Documentation:
   Enabled: false
 
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/AbcSize:
+  Exclude:
+    - app/models/attempt.rb
+
 RSpec/ExampleLength:
   Max: 15
 
 RSpec/MultipleExpectations:
   Max: 10
+
+

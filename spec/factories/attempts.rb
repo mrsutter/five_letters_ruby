@@ -12,7 +12,7 @@ FactoryBot.define do
     end
 
     trait :unsuccessful do
-      word { game.puzzled_word.chars.map(&:next).join[0...Word::MAX_LENGTH] }
+      word { generate_str_different_from(game.puzzled_word) }
     end
 
     after(:build, &:calc_result)

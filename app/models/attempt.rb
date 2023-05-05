@@ -12,6 +12,35 @@ class Attempt < ApplicationRecord
   validates :result, presence: true
 
   def calc_result
-    self.result = %i[match match match match match]
+    unmatched_chars = {}
+    result = []
+
+    game.puzzled_word.chars.each_with_index do |char, idx|
+      if char == word[idx]
+        result[idx] = :match
+        next
+      end
+
+      unmatched_chars[char] ||= []
+      unmatched_chars[char] << idx
+    end
+
+    word.chars.each_with_index do |char, idx|
+      next if result[idx]
+
+      if unmatched_chars[char].blank?
+        result[idx] = :absence
+        next
+      end
+
+      result[idx] = :wrong_place
+      unmatched_chars[char].shift
+    end
+
+    self.result = result
+  end
+
+  def successful?
+    word == game.puzzled_word
   end
 end
