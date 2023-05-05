@@ -50,6 +50,21 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.users (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    email character varying NOT NULL,
+    password_digest character varying NOT NULL,
+    game_available_at timestamp(6) without time zone NOT NULL,
+    language_id uuid NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: words; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -89,6 +104,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: words words_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -101,6 +124,20 @@ ALTER TABLE ONLY public.words
 --
 
 CREATE UNIQUE INDEX index_languages_on_slug ON public.languages USING btree (slug);
+
+
+--
+-- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
+
+
+--
+-- Name: index_users_on_language_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_language_id ON public.users USING btree (language_id);
 
 
 --
@@ -132,6 +169,14 @@ CREATE INDEX index_words_on_updated_at ON public.words USING btree (updated_at);
 
 
 --
+-- Name: users fk_rails_45f4f12508; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT fk_rails_45f4f12508 FOREIGN KEY (language_id) REFERENCES public.languages(id);
+
+
+--
 -- Name: words fk_rails_b80de9677b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -148,6 +193,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('20230504060106'),
 ('20230504121044'),
-('20230504124615');
+('20230504124615'),
+('20230505033630');
 
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Word < ApplicationRecord
-  MAX_LENGTH = 5
+  MAX_LENGTH = Rails.configuration.x.word_length
 
   belongs_to :language
 
@@ -10,7 +10,6 @@ class Word < ApplicationRecord
             uniqueness: true,
             length: { is: MAX_LENGTH }
   validate :name_should_match_language_letters, if: :language
-
   validates :archived, inclusion: [true, false]
 
   scope :available, -> { where(archived: false) }
