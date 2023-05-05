@@ -27,4 +27,8 @@ class Game < ApplicationRecord
       transitions from: :active, to: :wasted
     end
   end
+
+  def puzzled_word
+    @puzzled_word ||= word.name
+  end
 end

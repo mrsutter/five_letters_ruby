@@ -4,7 +4,7 @@ FactoryBot.define do
   factory :language do
     sequence(:name) { |n| "name_#{n}" }
     sequence(:slug) { |n| "slug_#{n}" }
-    letters { /\A[a-z]+\z/ }
+    letters { '\A[a-z]+\z' }
 
     trait :unavailable do
       available { false }
@@ -18,7 +18,7 @@ FactoryBot.define do
     trait :ru do
       slug { 'ru' }
       name { 'Русский' }
-      letters { /\A[а-я]+\z/ }
+      letters { '\A[а-я]+\z/' }
     end
   end
 end

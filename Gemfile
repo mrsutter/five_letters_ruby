@@ -25,4 +25,5 @@ group :test do
   gem 'json-schema'
   gem 'rubocop'
   gem 'rubocop-rspec'
+  gem 'string_pattern'
 end

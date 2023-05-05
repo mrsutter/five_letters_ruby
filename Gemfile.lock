@@ -205,6 +205,8 @@ GEM
       rubocop (~> 1.33)
       rubocop-capybara (~> 2.17)
     ruby-progressbar (1.13.0)
+    string_pattern (2.3.0)
+      regexp_parser (~> 2.5, >= 2.5.0)
     thor (1.2.1)
     timeout (0.3.2)
     tzinfo (2.0.6)
@@ -234,6 +236,7 @@ DEPENDENCIES
   rspec-rails (~> 6.0.0)
   rubocop
   rubocop-rspec
+  string_pattern
 
 RUBY VERSION
    ruby 3.0.0p0

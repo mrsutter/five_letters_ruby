@@ -4,7 +4,7 @@ class User < ApplicationRecord
   has_secure_password
 
   belongs_to :language
-  has_many :games, dependent: :destroy
+  has_many :games
 
   validates :email,
             presence: true,

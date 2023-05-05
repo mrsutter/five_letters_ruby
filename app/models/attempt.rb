@@ -10,4 +10,8 @@ class Attempt < ApplicationRecord
             presence: true,
             length: { is: Word::MAX_LENGTH }
   validates :result, presence: true
+
+  def calc_result
+    self.result = %i[match match match match match]
+  end
 end
