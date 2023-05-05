@@ -28,6 +28,22 @@ class Game < ApplicationRecord
     end
   end
 
+  def update_after_attempt(attempt)
+    return if attempt.game != self
+    return if attempts_count == MAX_ATTEMPTS_COUNT
+    return unless active?
+
+    self.attempts_count += 1
+
+    if attempt.successful?
+      win
+    elsif attempts_count == MAX_ATTEMPTS_COUNT
+      waste
+    end
+
+    save
+  end
+
   def puzzled_word
     @puzzled_word ||= word.name
   end
