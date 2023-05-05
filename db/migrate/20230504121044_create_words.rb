@@ -5,7 +5,7 @@ class CreateWords < ActiveRecord::Migration[7.0]
     create_table :words, id: :uuid do |t|
       t.string :name, null: false, index: { unique: true }
       t.boolean :archived, null: false, default: false
-      t.references :language, type: :uuid, null: false, foreign_key: true, index: true
+      t.references :language, type: :uuid, null: false, foreign_key: true
 
       t.timestamps
 

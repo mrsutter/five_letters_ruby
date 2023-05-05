@@ -50,6 +50,23 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tokens (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    jti character varying NOT NULL,
+    type character varying NOT NULL,
+    expired_at timestamp(6) without time zone NOT NULL,
+    user_id uuid NOT NULL,
+    refresh_token_id uuid,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT cr_tokens_refresh_token_presence CHECK ((NOT (((type)::text = 'Tokens::AccessToken'::text) AND (refresh_token_id IS NULL))))
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -104,6 +121,14 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: tokens tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tokens
+    ADD CONSTRAINT tokens_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -124,6 +149,20 @@ ALTER TABLE ONLY public.words
 --
 
 CREATE UNIQUE INDEX index_languages_on_slug ON public.languages USING btree (slug);
+
+
+--
+-- Name: index_tokens_on_refresh_token_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_tokens_on_refresh_token_id ON public.tokens USING btree (refresh_token_id);
+
+
+--
+-- Name: index_tokens_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_tokens_on_user_id ON public.tokens USING btree (user_id);
 
 
 --
@@ -177,11 +216,27 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: tokens fk_rails_ac8a5d0441; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tokens
+    ADD CONSTRAINT fk_rails_ac8a5d0441 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: words fk_rails_b80de9677b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.words
     ADD CONSTRAINT fk_rails_b80de9677b FOREIGN KEY (language_id) REFERENCES public.languages(id);
+
+
+--
+-- Name: tokens fk_rails_ea4a6c68e1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tokens
+    ADD CONSTRAINT fk_rails_ea4a6c68e1 FOREIGN KEY (refresh_token_id) REFERENCES public.tokens(id);
 
 
 --
@@ -194,6 +249,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230504060106'),
 ('20230504121044'),
 ('20230504124615'),
-('20230505033630');
+('20230505033630'),
+('20230505041410'),
+('20230505045700');
 
 
