@@ -1,0 +1,14 @@
+{
+  "allOf": [
+    { "$ref": "game_short.json" }
+  ],
+  "required": ["attempts"],
+  "properties": {
+    "attempts": {
+      "type": "array",
+      "items": {
+        "$ref": "language.json"
+      }
+    }
+  }
+}

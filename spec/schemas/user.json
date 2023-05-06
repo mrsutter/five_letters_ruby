@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "required": ["email", "language"],
+  "properties": {
+    "email": { "type": "string" },
+    "language": { "$ref": "language.json" }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "type": "array",
   "items": {
-    "$ref": "language.json"
+    "$ref": "game_short.json"
   }
 }

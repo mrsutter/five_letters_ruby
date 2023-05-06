@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "required": ["number", "word", "result"],
+  "properties": {
+    "number": { "type": "integer" },
+    "word": { "type": "string" },
+    "result": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["match", "wrong_place", "absence"]
+      }
+    }
+  }
+}

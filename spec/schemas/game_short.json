@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "required": ["id", "state", "attempts_count", "created_at"],
+  "properties": {
+    "id": { "type": "string" },
+    "state": {
+      "type": "string",
+      "enum": ["active", "won", "wasted"]
+    },
+    "attempts_count": { "type": "integer" },
+    "created_at": { "type": "string" }
+  }
+}
