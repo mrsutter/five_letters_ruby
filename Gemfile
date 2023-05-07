@@ -14,6 +14,7 @@ gem 'pg'
 gem 'puma', '~> 5.0'
 gem 'rack-cors'
 gem 'rails', '~> 7.0.4', '>= 7.0.4.3'
+gem 'sidekiq'
 
 group :development, :test do
   gem 'debug', platforms: %i[mri]
