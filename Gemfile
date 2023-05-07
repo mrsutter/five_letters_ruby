@@ -9,6 +9,7 @@ gem 'aasm'
 gem 'bcrypt', '~> 3.1.7'
 gem 'blueprinter'
 gem 'bootsnap', require: false
+gem 'jwt'
 gem 'oj'
 gem 'pg'
 gem 'puma', '~> 5.0'

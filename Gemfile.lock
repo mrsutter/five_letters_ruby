@@ -100,6 +100,7 @@ GEM
     json (2.6.3)
     json-schema (4.0.0)
       addressable (>= 2.8)
+    jwt (2.7.0)
     loofah (2.20.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -237,6 +238,7 @@ DEPENDENCIES
   debug
   factory_bot_rails
   json-schema
+  jwt
   oj
   pg
   puma (~> 5.0)

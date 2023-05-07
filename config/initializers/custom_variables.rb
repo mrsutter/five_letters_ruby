@@ -9,4 +9,14 @@ Rails.application.configure do
 
   config.x.game_max_attempts_count = 6
   config.x.game_lifecycle_hours = 24
+
+  config.x.access_token_private_key = OpenSSL::PKey::RSA.new(
+    ENV.fetch('FL_RUBY_ACCESS_TOKEN_PRIVATE_KEY').gsub('\n', "\n")
+  )
+  config.x.access_token_public_key = config.x.access_token_private_key.public_key
+
+  config.x.refresh_token_private_key = OpenSSL::PKey::RSA.new(
+    ENV.fetch('FL_RUBY_REFRESH_TOKEN_PRIVATE_KEY').gsub('\n', "\n")
+  )
+  config.x.refresh_token_public_key = config.x.refresh_token_private_key.public_key
 end
