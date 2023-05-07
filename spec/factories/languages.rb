@@ -18,7 +18,7 @@ FactoryBot.define do
     trait :ru do
       slug { 'ru' }
       name { 'Русский' }
-      letters { '\A[а-я]+\z/' }
+      letters { '\A[а-я]+\z' }
     end
   end
 end
