@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class GamesController < ApplicationController
+  after_action :set_user_headers
+
   def index
     render json: GameBlueprint.render(games.ordered, view: :short)
   end

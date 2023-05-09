@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe 'RootPath', type: :request do
-  it 'returns correct status' do
-    get '/'
-    expect(response.status).to eq(404)
-  end
+  before { get '/' }
+
+  it_behaves_like 'not_found_error'
 end

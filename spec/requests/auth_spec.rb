@@ -21,7 +21,7 @@ RSpec.describe 'Auth', type: :request do
 
   describe 'POST /api/v1/auth/logout' do
     let(:url) { '/api/v1/auth/logout' }
-    let (:http_method) { :post }
+    let(:http_method) { :post }
 
     let(:user) { create(:user) }
 

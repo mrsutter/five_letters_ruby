@@ -4,11 +4,11 @@
   "properties": {
     "status": {
       "type": "integer",
-      "enum": [401]
+      "enum": [401, 404]
     },
     "code": {
       "type": "string",
-      "enum": ["unauthorized"]
+      "enum": ["unauthorized", "not_found"]
     },
     "message": { "type": "string" },
     "details": { "type": "array" }

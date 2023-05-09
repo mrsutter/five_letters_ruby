@@ -3,12 +3,13 @@
 RSpec.describe 'UnexistingPath', type: :request do
   let(:url) { '/api/v1/unexisting_path' }
 
-  http_methods = %i[get post put patch delete head options]
+  http_methods = %i[get post put patch delete options]
 
   http_methods.each do |http_method|
-    it "returns correct status for #{http_method} method" do
-      public_send(http_method, url)
-      expect(response.status).to eq(404)
+    describe http_method do
+      before { public_send(http_method, url) }
+
+      it_behaves_like 'not_found_error'
     end
   end
 end

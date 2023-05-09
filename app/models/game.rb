@@ -12,7 +12,7 @@ class Game < ApplicationRecord
 
   validates :attempts_count,
             numericality: { only_integer: true, in: 0..MAX_ATTEMPTS_COUNT }
-  validates :user, uniqueness: true, if: -> { active? }
+  validates :user, uniqueness: { scope: :state, conditions: -> { active } }
 
   scope :ordered, -> { order(:created_at) }
 

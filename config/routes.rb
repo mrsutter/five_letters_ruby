@@ -21,6 +21,6 @@ Rails.application.routes.draw do
     end
   end
 
-  root 'errors#not_found'
-  match '*path', to: 'errors#not_found', via: :all
+  root 'home#not_found'
+  match '*path', to: 'home#not_found', via: :all
 end
