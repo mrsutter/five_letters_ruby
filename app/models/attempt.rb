@@ -8,7 +8,7 @@ class Attempt < ApplicationRecord
   validates :number, uniqueness: { scope: :game }
   validates :word,
             presence: true,
-            length: { is: Word::MAX_LENGTH }
+            length: { is: Word::LENGTH }
   validates :result, presence: true
 
   def calc_result
