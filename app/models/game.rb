@@ -14,6 +14,8 @@ class Game < ApplicationRecord
             numericality: { only_integer: true, in: 0..MAX_ATTEMPTS_COUNT }
   validates :user, uniqueness: true, if: -> { active? }
 
+  scope :ordered, -> { order(:created_at) }
+
   aasm column: :state do
     state :active, initial: true
     state :won
