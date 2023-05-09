@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class AuthController < ApplicationController
+  skip_before_action :authenticate_user!, only: %i[register login refresh]
+
   def register
     render json: {}, status: 201
   end

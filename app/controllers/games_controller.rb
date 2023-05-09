@@ -2,15 +2,17 @@
 
 class GamesController < ApplicationController
   def index
-    render json: {}
+    render json: GameBlueprint.render(games.ordered, view: :short)
   end
 
   def show
-    render json: {}
+    game = games.find_by!(id: params[:id])
+    render json: GameBlueprint.render(game, view: :show)
   end
 
   def active
-    render json: {}
+    game = games.active.first!
+    render json: GameBlueprint.render(game, view: :show)
   end
 
   def create
@@ -19,5 +21,11 @@ class GamesController < ApplicationController
 
   def create_attempt
     render json: {}, status: 201
+  end
+
+  private
+
+  def games
+    @games ||= current_user.games
   end
 end

@@ -21,11 +21,11 @@ RSpec.describe 'Auth', type: :request do
 
   describe 'POST /api/v1/auth/logout' do
     let(:url) { '/api/v1/auth/logout' }
+    let (:http_method) { :post }
 
-    it 'returns сorrect status' do
-      post url
-      expect(response.status).to eq(204)
-    end
+    let(:user) { create(:user) }
+
+    include_examples 'unauthorized_request'
   end
 
   describe 'POST /api/v1/auth/refresh' do

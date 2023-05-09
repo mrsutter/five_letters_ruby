@@ -2,7 +2,7 @@
 
 class UsersController < ApplicationController
   def show
-    render json: {}
+    render json: UserBlueprint.render(current_user)
   end
 
   def update

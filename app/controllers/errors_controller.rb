@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ErrorsController < ApplicationController
+class ErrorsController < ActionController::API
   def not_found
     render json: { code: :not_found }, status: 404
   end

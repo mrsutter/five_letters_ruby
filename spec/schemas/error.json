@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "required": ["status", "code", "message", "details"],
+  "properties": {
+    "status": {
+      "type": "integer",
+      "enum": [401]
+    },
+    "code": {
+      "type": "string",
+      "enum": ["unauthorized"]
+    },
+    "message": { "type": "string" },
+    "details": { "type": "array" }
+  }
+}
