@@ -6,4 +6,6 @@ class Token < ApplicationRecord
   validates :type, presence: true
   validates :expired_at, presence: true
   validates :jti, presence: true, uniqueness: true
+
+  attribute :value, :string
 end
