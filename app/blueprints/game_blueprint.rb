@@ -12,6 +12,8 @@ class GameBlueprint < Blueprinter::Base
 
   view :show do
     include_view :short
-    association :attempts, blueprint: AttemptBlueprint
+    association :attempts, blueprint: AttemptBlueprint do |game|
+      game.attempts.ordered_by_number
+    end
   end
 end

@@ -1,13 +1,18 @@
 {
-  "allOf": [
-    { "$ref": "game_short.json" }
-  ],
-  "required": ["attempts"],
+  "type": "object",
+  "required": ["id", "state", "attempts_count", "created_at", "attempts"],
   "properties": {
+    "id": { "type": "string" },
+    "state": {
+      "type": "string",
+      "enum": ["active", "won", "wasted"]
+    },
+    "attempts_count": { "type": "integer" },
+    "created_at": { "type": "string" },
     "attempts": {
       "type": "array",
       "items": {
-        "$ref": "language.json"
+        "$ref": "attempt.json"
       }
     }
   }

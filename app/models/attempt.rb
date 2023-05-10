@@ -11,6 +11,8 @@ class Attempt < ApplicationRecord
             length: { is: Word::LENGTH }
   validates :result, presence: true
 
+  scope :ordered_by_number, -> { order(:number) }
+
   def calc_result
     unmatched_chars = {}
     result = []

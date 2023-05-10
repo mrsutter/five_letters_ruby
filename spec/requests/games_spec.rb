@@ -45,7 +45,7 @@ RSpec.describe 'Games', type: :request do
   describe 'GET /api/v1/games/:id' do
     let(:url) { "/api/v1/games/#{game.id}" }
     let(:http_method) { :get }
-    let(:game) { create(:game, :with_attempts, attempts_count: 1, user: user) }
+    let(:game) { create(:game, :with_attempts, attempts_count: 2, user: user) }
 
     include_examples 'unauthorized_request'
 
@@ -64,13 +64,68 @@ RSpec.describe 'Games', type: :request do
         it_behaves_like 'not_found_error'
       end
     end
+
+    it 'returns status 200, correct data with attempts in correct order and headers' do
+      get url, headers: auth_header(token.value)
+
+      expect(response.status).to eq(200)
+
+      expect(response).to match_schema('game')
+
+      expect(body['id']).to eq(game.id)
+      expect(body['state']).to eq(game.state)
+      expect(body['attempts_count']).to eq(game.attempts_count)
+      expect(body['created_at']).to eq(game.created_at.f_iso8601)
+
+      expect(body['attempts'].length).to eq(2)
+      game.attempts.ordered_by_number.each_with_index do |attempt, idx|
+        expect(body['attempts'][idx]['number']).to eq(attempt.number)
+        expect(body['attempts'][idx]['word']).to eq(attempt.word)
+        expect(body['attempts'][idx]['result']).to eq(attempt.result)
+      end
+
+      expect(response.headers['Next-Game-Available-At'])
+        .to eq(user.game_available_at.f_iso8601)
+    end
   end
 
   describe 'GET /api/v1/games/active' do
     let(:url) { '/api/v1/games/active' }
     let(:http_method) { :get }
+    let(:game) { create(:game, :with_attempts, attempts_count: 2, user: user) }
 
     include_examples 'unauthorized_request'
+
+    context 'when there are no active games' do
+      before { get url, headers: auth_header(token.value) }
+
+      it_behaves_like 'not_found_error'
+    end
+
+    it 'returns status 200, correct data with attempts in correct order and headers' do
+      game
+
+      get url, headers: auth_header(token.value)
+
+      expect(response.status).to eq(200)
+
+      expect(response).to match_schema('game')
+
+      expect(body['id']).to eq(game.id)
+      expect(body['state']).to eq(game.state)
+      expect(body['attempts_count']).to eq(game.attempts_count)
+      expect(body['created_at']).to eq(game.created_at.f_iso8601)
+
+      expect(body['attempts'].length).to eq(2)
+      game.attempts.ordered_by_number.each_with_index do |attempt, idx|
+        expect(body['attempts'][idx]['number']).to eq(attempt.number)
+        expect(body['attempts'][idx]['word']).to eq(attempt.word)
+        expect(body['attempts'][idx]['result']).to eq(attempt.result)
+      end
+
+      expect(response.headers['Next-Game-Available-At'])
+        .to eq(user.game_available_at.f_iso8601)
+    end
   end
 
   describe 'POST /api/v1/games' do

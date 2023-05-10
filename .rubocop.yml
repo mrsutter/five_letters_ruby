@@ -15,10 +15,10 @@ Metrics/AbcSize:
     - app/models/attempt.rb
 
 RSpec/ExampleLength:
-  Max: 15
+  Max: 20
 
 RSpec/MultipleExpectations:
-  Max: 10
+  Max: 15
 
 RSpec/MultipleMemoizedHelpers:
   Max: 10
