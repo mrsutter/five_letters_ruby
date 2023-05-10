@@ -133,6 +133,25 @@ RSpec.describe 'Games', type: :request do
     let(:http_method) { :post }
 
     include_examples 'unauthorized_request'
+
+    context 'when it is too early to start a new game' do
+      let(:user) { create(:user, :game_not_available) }
+
+      before do
+        post url, headers: auth_header(token.value)
+      end
+
+      it_behaves_like 'too_early_error'
+    end
+
+    # context 'when it is not early but there is an active game' do
+    #   before do
+    #     create(:game, user: user)
+    #     post url, headers: auth_header(token.value)
+    #   end
+
+    #   it_behaves_like 'internal_server_error'
+    # end
   end
 
   describe 'POST /api/v1/games/active/attempts' do

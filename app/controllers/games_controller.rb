@@ -18,6 +18,10 @@ class GamesController < ApplicationController
   end
 
   def create
+    service_call(
+      service_class: GameServices::Create::Service,
+      args: { user: current_user }
+    )
     render json: {}, status: 201
   end
 

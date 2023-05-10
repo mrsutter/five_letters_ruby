@@ -8,7 +8,7 @@
     },
     "code": {
       "type": "string",
-      "enum": ["unauthorized", "not_found", "input_errors"]
+      "enum": ["unauthorized", "not_found", "input_errors", "too_early"]
     },
     "message": { "type": "string" },
     "details": {
