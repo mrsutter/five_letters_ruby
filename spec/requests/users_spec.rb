@@ -1,32 +1,20 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Users', type: :request do
+  let(:token) { create(:access_token, user: user) }
+
   describe 'GET /api/v1/profile' do
     let(:url) { '/api/v1/profile' }
     let(:http_method) { :get }
+    let(:params) { nil }
 
     let(:user) { create(:user) }
-    let(:token) { create(:access_token, user: user) }
+    let(:language) { user.language }
 
     include_examples 'unauthorized_request'
 
-    it 'returns status 200, correct data and headers' do
-      get url, headers: auth_header(token.value)
-
-      expect(response.status).to eq(200)
-
-      expect(response).to match_schema('user')
-
-      expect(body['email']).to eq(user.email)
-
-      lang_data = body['language']
-      user_lang = user.language
-      expect(lang_data['id']).to eq(user_lang.id)
-      expect(lang_data['slug']).to eq(user_lang.slug)
-      expect(lang_data['name']).to eq(user_lang.name)
-
-      expect(response.headers['Next-Game-Available-At'])
-        .to eq(user.game_available_at.f_iso8601)
+    context 'when token is correct' do
+      it_behaves_like 'user_response'
     end
   end
 
@@ -34,8 +22,37 @@ RSpec.describe 'Users', type: :request do
     let(:url) { '/api/v1/profile' }
     let(:http_method) { :put }
 
-    let(:user) { create(:user) }
+    let(:en_lang) { create(:language, :en) }
+    let(:user) { create(:user, language: en_lang) }
 
     include_examples 'unauthorized_request'
+
+    context 'when data is correct' do
+      context 'when new language was sent' do
+        let(:language) { create(:language, :ru) }
+        let(:params) { { language_id: language.id } }
+
+        it 'updates value in db' do
+          expect { put url, params: params, headers: auth_header(token.value) }
+            .to change { user.reload.language }
+            .from(en_lang)
+            .to(language)
+        end
+
+        it_behaves_like 'user_response'
+      end
+
+      context 'when old language was sent' do
+        let(:language) { en_lang }
+        let(:params) { { language_id: language.id } }
+
+        it 'updates value in db' do
+          expect { put url, params: params, headers: auth_header(token.value) }
+            .not_to(change { user.reload.language })
+        end
+
+        it_behaves_like 'user_response'
+      end
+    end
   end
 end

@@ -8,6 +8,8 @@ class UsersController < ApplicationController
   end
 
   def update
-    render json: {}
+    language = Language.available.find(params[:language_id])
+    current_user.update(language: language)
+    render json: UserBlueprint.render(current_user)
   end
 end

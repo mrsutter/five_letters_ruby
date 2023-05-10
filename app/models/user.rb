@@ -13,5 +13,6 @@ class User < ApplicationRecord
   validates :game_available_at, presence: true
   validates :password,
             presence: true,
-            length: { minimum: Rails.configuration.x.min_password_length }
+            length: { minimum: Rails.configuration.x.min_password_length },
+            on: :create
 end
