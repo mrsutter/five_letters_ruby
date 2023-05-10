@@ -27,6 +27,65 @@ RSpec.describe 'Users', type: :request do
 
     include_examples 'unauthorized_request'
 
+    context 'when data is not correct' do
+      context 'when incorrect body was sent' do
+        let(:params) { 'wrong body' }
+        let(:err_details) { [{ field: 'language_id', code: 'required' }] }
+
+        before do
+          put url, params: params, headers: auth_header(token.value)
+        end
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when empty body was sent' do
+        let(:err_details) { [{ field: 'language_id', code: 'required' }] }
+
+        before do
+          put url, headers: auth_header(token.value)
+        end
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when empty string was sent' do
+        let(:params) { { language_id: '' } }
+        let(:err_details) { [{ field: 'language_id', code: 'required' }] }
+
+        before do
+          put url, params: params, headers: auth_header(token.value)
+        end
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when unexisting language was sent' do
+        let(:params) { { language_id: 'unexisting_id' } }
+
+        let(:err_details) { [{ field: 'language_id', code: 'wrong' }] }
+
+        before do
+          put url, params: params, headers: auth_header(token.value)
+        end
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when not available language was sent' do
+        let(:language) { create(:language, :unavailable, :ru) }
+        let(:params) { { language_id: language.id } }
+
+        let(:err_details) { [{ field: 'language_id', code: 'wrong' }] }
+
+        before do
+          put url, params: params, headers: auth_header(token.value)
+        end
+
+        it_behaves_like 'input_errors'
+      end
+    end
+
     context 'when data is correct' do
       context 'when new language was sent' do
         let(:language) { create(:language, :ru) }

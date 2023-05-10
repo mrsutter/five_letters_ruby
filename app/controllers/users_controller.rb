@@ -8,8 +8,16 @@ class UsersController < ApplicationController
   end
 
   def update
-    language = Language.available.find(params[:language_id])
-    current_user.update(language: language)
+    service_call(
+      service_class: UserServices::Update::Service,
+      args: { user: current_user, params: update_params }
+    )
     render json: UserBlueprint.render(current_user)
+  end
+
+  private
+
+  def update_params
+    params.permit(:language_id)
   end
 end

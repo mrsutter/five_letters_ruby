@@ -15,6 +15,10 @@ module ExceptionHandler
     rescue_from ActiveRecord::RecordNotFound do
       render_error(status: 404, code: :not_found)
     end
+
+    rescue_from ServiceError do |e|
+      render_error(status: 422, code: e.code, details: e.details)
+    end
   end
 
   def render_error(status:, code:, message: '', details: [])

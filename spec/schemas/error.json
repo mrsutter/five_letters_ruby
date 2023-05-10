@@ -4,13 +4,28 @@
   "properties": {
     "status": {
       "type": "integer",
-      "enum": [401, 404]
+      "enum": [401, 404, 422]
     },
     "code": {
       "type": "string",
-      "enum": ["unauthorized", "not_found"]
+      "enum": ["unauthorized", "not_found", "input_errors"]
     },
     "message": { "type": "string" },
-    "details": { "type": "array" }
+    "details": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["field", "code"],
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "enum": ["required", "wrong"]
+          }
+        }
+      }
+    }
   }
 }

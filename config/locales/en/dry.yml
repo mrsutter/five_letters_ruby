@@ -1,0 +1,5 @@
+en:
+  dry:
+    errors:
+      key?: 'required'
+      filled?: 'required'
