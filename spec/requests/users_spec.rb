@@ -7,13 +7,18 @@ RSpec.describe 'Users', type: :request do
     let(:url) { '/api/v1/profile' }
     let(:http_method) { :get }
     let(:params) { nil }
+    let(:response_status) { 200 }
 
     let(:user) { create(:user) }
     let(:language) { user.language }
 
     include_examples 'unauthorized_request'
 
-    context 'when token is correct' do
+    describe 'response' do
+      before do
+        get url, headers: auth_header(token.value)
+      end
+
       it_behaves_like 'user_response'
     end
   end
@@ -98,7 +103,15 @@ RSpec.describe 'Users', type: :request do
             .to(language)
         end
 
-        it_behaves_like 'user_response'
+        describe 'response' do
+          let(:response_status) { 200 }
+
+          before do
+            put url, params: params, headers: auth_header(token.value)
+          end
+
+          it_behaves_like 'user_response'
+        end
       end
 
       context 'when old language was sent' do
@@ -110,7 +123,15 @@ RSpec.describe 'Users', type: :request do
             .not_to(change { user.reload.language })
         end
 
-        it_behaves_like 'user_response'
+        describe 'response' do
+          let(:response_status) { 200 }
+
+          before do
+            put url, params: params, headers: auth_header(token.value)
+          end
+
+          it_behaves_like 'user_response'
+        end
       end
     end
   end

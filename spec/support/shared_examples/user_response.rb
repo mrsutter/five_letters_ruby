@@ -1,12 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'user_response' do
-  before do
-    public_send(http_method, url, params: params, headers: auth_header(token.value))
-  end
-
-  it 'returns status 200, correct data and headers' do
-    expect(response.status).to eq(200)
+  it 'returns correct status, data and headers' do
+    expect(response.status).to eq(response_status)
 
     expect(response).to match_schema('user')
 
