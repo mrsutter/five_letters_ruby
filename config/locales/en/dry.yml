@@ -1,5 +1,6 @@
 en:
   dry:
     errors:
-      key?: 'required'
-      filled?: 'required'
+      key?: required
+      filled?: required
+      min_size?: too_short
