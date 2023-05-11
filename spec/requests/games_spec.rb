@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe 'Games', type: :request do
-  let(:user) { create(:user) }
+  let(:language) { create(:language, :en) }
+  let(:user) { create(:user, language: language) }
   let(:token) { create(:access_token, user: user) }
 
   let!(:another_user) { create(:user) }
@@ -144,14 +145,83 @@ RSpec.describe 'Games', type: :request do
       it_behaves_like 'too_early_error'
     end
 
-    # context 'when it is not early but there is an active game' do
-    #   before do
-    #     create(:game, user: user)
-    #     post url, headers: auth_header(token.value)
-    #   end
+    context 'when it is not early but there is an active game' do
+      before do
+        create(:game, user: user)
+        post url, headers: auth_header(token.value)
+      end
 
-    #   it_behaves_like 'internal_server_error'
-    # end
+      it_behaves_like 'internal_server_error'
+    end
+
+    context 'when user can start a new game' do
+      let(:first_word) { create(:word, language: language) }
+
+      before do
+        create(:game, :wasted, user: user, word: first_word)
+      end
+
+      context 'when there are new words' do
+        let!(:second_word) { create(:word, language: language) }
+
+        it 'saves in db correctly' do
+          expect { post url, headers: auth_header(token.value) }
+            .to change { user.reload.games.count }
+            .by(1)
+
+          new_game = user.games.find_by(word: second_word)
+
+          expect(new_game).to be_present
+
+          expect(new_game.attempts_count).to eq(0)
+          expect(new_game.attempts.count).to eq(0)
+
+          expect(new_game.state).to eq('active')
+
+          expected_game_available_at = new_game.created_at + Game::LIFECYCLE_HOURS.hours
+          expect(user.game_available_at).to eq(expected_game_available_at)
+        end
+
+        describe 'response' do
+          before do
+            post url, headers: auth_header(token.value)
+          end
+
+          let(:new_game) { user.games.find_by(word: second_word) }
+
+          it_behaves_like 'new_game_response'
+        end
+      end
+
+      context 'when there are no new words' do
+        it 'saves in db correctly' do
+          expect { post url, headers: auth_header(token.value) }
+            .to change { user.reload.games.count }
+            .by(1)
+
+          new_game = user.games.where(word: first_word).ordered.last
+          expect(new_game).to be_present
+
+          expect(new_game.attempts_count).to eq(0)
+          expect(new_game.attempts.count).to eq(0)
+
+          expect(new_game.state).to eq('active')
+
+          expected_game_available_at = new_game.created_at + Game::LIFECYCLE_HOURS.hours
+          expect(user.game_available_at).to eq(expected_game_available_at)
+        end
+
+        describe 'response' do
+          before do
+            post url, headers: auth_header(token.value)
+          end
+
+          let(:new_game) { user.games.where(word: first_word).ordered.last }
+
+          it_behaves_like 'new_game_response'
+        end
+      end
+    end
   end
 
   describe 'POST /api/v1/games/active/attempts' do

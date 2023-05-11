@@ -4,11 +4,11 @@
   "properties": {
     "status": {
       "type": "integer",
-      "enum": [401, 404, 422]
+      "enum": [401, 404, 422, 500]
     },
     "code": {
       "type": "string",
-      "enum": ["unauthorized", "not_found", "input_errors", "too_early"]
+      "enum": ["unauthorized", "not_found", "input_errors", "too_early", "internal_server_error"]
     },
     "message": { "type": "string" },
     "details": {

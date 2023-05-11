@@ -12,7 +12,7 @@ class ApplicationController < ActionController::API
 
     raise result.failure if result.failure?
 
-    result
+    result.value!
   end
 
   def set_user_headers

@@ -18,11 +18,11 @@ class GamesController < ApplicationController
   end
 
   def create
-    service_call(
+    result = service_call(
       service_class: GameServices::Create::Service,
       args: { user: current_user }
     )
-    render json: {}, status: 201
+    render json: GameBlueprint.render(result[:game], view: :show), status: 201
   end
 
   def create_attempt
