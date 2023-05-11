@@ -13,8 +13,7 @@ class GamesController < ApplicationController
   end
 
   def active
-    game = games.active.first!
-    render json: GameBlueprint.render(game, view: :show)
+    render json: GameBlueprint.render(active_game, view: :show)
   end
 
   def create
@@ -26,12 +25,24 @@ class GamesController < ApplicationController
   end
 
   def create_attempt
-    render json: {}, status: 201
+    result = service_call(
+      service_class: GameServices::CreateAttempt::Service,
+      args: { game: active_game, params: attempt_params }
+    )
+    render json: GameBlueprint.render(result[:game], view: :show), status: 201
   end
 
   private
 
   def games
     @games ||= current_user.games
+  end
+
+  def active_game
+    @active_game ||= games.active.first!
+  end
+
+  def attempt_params
+    @attempt_params ||= params.permit(:word)
   end
 end

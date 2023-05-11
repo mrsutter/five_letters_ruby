@@ -18,7 +18,7 @@ module Shared
       private
 
       def contract
-        input[:service].module_parent::Contract.new
+        input[:service].module_parent::Contract.new(data: input.except(:params))
       end
 
       def processed_errors(result_errors)

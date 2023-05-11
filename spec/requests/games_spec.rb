@@ -97,7 +97,7 @@ RSpec.describe 'Games', type: :request do
 
     include_examples 'unauthorized_request'
 
-    context 'when there are no active games' do
+    context 'when there is no active game' do
       before { get url, headers: auth_header(token.value) }
 
       it_behaves_like 'not_found_error'
@@ -229,5 +229,71 @@ RSpec.describe 'Games', type: :request do
     let(:http_method) { :post }
 
     include_examples 'unauthorized_request'
+
+    context 'when there is no active game' do
+      before { post url, headers: auth_header(token.value) }
+
+      it_behaves_like 'not_found_error'
+    end
+
+    context 'when data is not correct' do
+      let!(:game) { create(:game, user: user) }
+
+      context 'when incorrect body was sent' do
+        let(:params) { 'wrong body' }
+        let(:err_details) { [{ field: 'word', code: 'required' }] }
+
+        before do
+          post url, params: params, headers: auth_header(token.value)
+        end
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when empty body was sent' do
+        let(:err_details) { [{ field: 'word', code: 'required' }] }
+
+        before do
+          post url, headers: auth_header(token.value)
+        end
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when empty string was sent' do
+        let(:params) { { word: '' } }
+        let(:err_details) { [{ field: 'word', code: 'required' }] }
+
+        before do
+          post url, params: params, headers: auth_header(token.value)
+        end
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when unexisting word was sent' do
+        let(:params) { { word: 'word' } }
+        let(:err_details) { [{ field: 'word', code: 'not_found' }] }
+
+        before do
+          post url, params: params, headers: auth_header(token.value)
+        end
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when archived word was sent' do
+        let(:params) do
+          { word: create(:word, :archived, language: game.word.language).name }
+        end
+        let(:err_details) { [{ field: 'word', code: 'not_found' }] }
+
+        before do
+          post url, params: params, headers: auth_header(token.value)
+        end
+
+        it_behaves_like 'input_errors'
+      end
+    end
   end
 end

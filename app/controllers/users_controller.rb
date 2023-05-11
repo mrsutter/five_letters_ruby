@@ -18,6 +18,6 @@ class UsersController < ApplicationController
   private
 
   def update_params
-    params.permit(:language_id)
+    @update_params ||= params.permit(:language_id)
   end
 end
