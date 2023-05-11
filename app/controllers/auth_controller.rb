@@ -8,9 +8,7 @@ class AuthController < ApplicationController
       service_class: AuthServices::Register::Service,
       args: { params: register_params }
     )
-    @current_user = result[:user]
-
-    render json: UserBlueprint.render(current_user), status: 201
+    render json: UserBlueprint.render(result[:user]), status: 201
   end
 
   def login
