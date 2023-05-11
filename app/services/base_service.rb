@@ -6,7 +6,9 @@ class BaseService
   def call(input)
     input[:service] = self.class
     input[:params] = input[:params].to_h
-    super
+    ActiveRecord::Base.transaction do
+      super
+    end
   end
 
   class << self
