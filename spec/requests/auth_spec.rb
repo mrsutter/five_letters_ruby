@@ -286,7 +286,7 @@ RSpec.describe 'Auth', type: :request do
     let(:email) { 'niko_bellic@gta.com' }
     let(:password) { 'helicopter_mission' }
 
-    before { create(:user, email: email, password: password) }
+    let!(:user) { create(:user, email: email, password: password) }
 
     context 'when data is not correct' do
       context 'when incorrect body was sent' do
@@ -404,6 +404,51 @@ RSpec.describe 'Auth', type: :request do
         before { post url, params: params }
 
         it_behaves_like 'input_errors'
+      end
+    end
+
+    context 'when data is correct' do
+      let(:params) { { email: email, password: password } }
+
+      before { Timecop.freeze }
+      after { Timecop.return }
+
+      it 'responds with status 200 and correct data' do
+        post url, params: params
+
+        expect(response.status).to eq(200)
+        expect(response.headers['Next-Game-Available-At']).to be_nil
+
+        access_token_value = body['access_token']
+        refresh_token_value = body['refresh_token']
+
+        expect(access_token_value).to be_present
+        expect(refresh_token_value).to be_present
+      end
+
+      it 'saves refresh token in db correctly' do
+        expect { post url, params: params }
+          .to change { user.reload.access_tokens.count }.by(1)
+          .and change { user.refresh_tokens.count }.by(1)
+
+        _, refresh_token_jti = JwtToken.decode(
+          value: body['refresh_token'],
+          public_key: Tokens::RefreshToken::PUB_KEY
+        )
+        refresh_token = Tokens::RefreshToken.find_by(jti: refresh_token_jti)
+        expect(refresh_token).to be_present
+        expect(refresh_token.user).to eq(user)
+        expect(refresh_token.expired_at).to eq(Time.current + Tokens::RefreshToken::TTL)
+
+        _, access_token_jti = JwtToken.decode(
+          value: body['access_token'],
+          public_key: Tokens::AccessToken::PUB_KEY
+        )
+        access_token = Tokens::AccessToken.find_by(jti: access_token_jti)
+        expect(access_token).to be_present
+        expect(access_token.user).to eq(user)
+        expect(access_token.refresh_token).to eq(refresh_token)
+        expect(access_token.expired_at).to eq(Time.current + Tokens::AccessToken::TTL)
       end
     end
   end

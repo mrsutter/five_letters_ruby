@@ -16,6 +16,8 @@ RSpec.shared_examples 'user_response' do
     if with_user_headers
       expect(response.headers['Next-Game-Available-At'])
         .to eq(user.game_available_at.f_iso8601)
+    else
+      expect(response.headers['Next-Game-Available-At']).to be_nil
     end
   end
 end

@@ -8,6 +8,9 @@ class User < ApplicationRecord
   belongs_to :language
   has_many :games
 
+  has_many :access_tokens, class_name: 'Tokens::AccessToken'
+  has_many :refresh_tokens, class_name: 'Tokens::RefreshToken'
+
   validates :email,
             presence: true,
             uniqueness: true,

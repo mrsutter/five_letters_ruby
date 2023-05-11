@@ -18,7 +18,7 @@ class AuthController < ApplicationController
       service_class: AuthServices::Login::Service,
       args: { params: login_params }
     )
-    render json: TokensBlueprint.render(result[:tokens]), status: 200
+    render json: TokensBlueprint.render(result[:tokens])
   end
 
   def logout
