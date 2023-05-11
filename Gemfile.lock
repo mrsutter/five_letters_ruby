@@ -266,6 +266,7 @@ GEM
     string_pattern (2.3.0)
       regexp_parser (~> 2.5, >= 2.5.0)
     thor (1.2.1)
+    timecop (0.9.6)
     timeout (0.3.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -301,6 +302,7 @@ DEPENDENCIES
   rubocop-rspec
   sidekiq (~> 6.5.5)
   string_pattern
+  timecop
 
 RUBY VERSION
    ruby 3.0.0p0

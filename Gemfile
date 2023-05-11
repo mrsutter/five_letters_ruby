@@ -32,4 +32,5 @@ group :test do
   gem 'rubocop'
   gem 'rubocop-rspec'
   gem 'string_pattern'
+  gem 'timecop'
 end
