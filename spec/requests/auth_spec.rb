@@ -271,6 +271,7 @@ RSpec.describe 'Auth', type: :request do
 
       describe 'response' do
         let(:response_status) { 201 }
+        let(:with_user_headers) { false }
 
         before { post url, params: params }
 
@@ -282,9 +283,128 @@ RSpec.describe 'Auth', type: :request do
   describe 'POST /api/v1/auth/login' do
     let(:url) { '/api/v1/auth/login' }
 
-    it 'returns сorrect status' do
-      post url
-      expect(response.status).to eq(200)
+    let(:email) { 'niko_bellic@gta.com' }
+    let(:password) { 'helicopter_mission' }
+
+    before { create(:user, email: email, password: password) }
+
+    context 'when data is not correct' do
+      context 'when incorrect body was sent' do
+        let(:params) { 'wrong body' }
+        let(:err_details) do
+          [
+            { field: 'email', code: 'required' },
+            { field: 'password', code: 'required' }
+          ]
+        end
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when all params were missed' do
+        let(:params) { {} }
+        let(:err_details) do
+          [
+            { field: 'email', code: 'required' },
+            { field: 'password', code: 'required' }
+          ]
+        end
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when empty body was sent' do
+        let(:err_details) do
+          [
+            { field: 'email', code: 'required' },
+            { field: 'password', code: 'required' }
+          ]
+        end
+
+        before { post url }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when empty strings were sent' do
+        let(:params) do
+          { email: '', password: '' }
+        end
+        let(:err_details) do
+          [
+            { field: 'email', code: 'required' },
+            { field: 'password', code: 'required' }
+          ]
+        end
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when email was missed' do
+        let(:params) { { password: password } }
+
+        let(:err_details) { [{ field: 'email', code: 'required' }] }
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when email is incorrect' do
+        let(:params) { { email: 'niko_bellic@', password: password } }
+
+        let(:err_details) { [{ field: 'email', code: 'wrong' }] }
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when unexisting email was sent' do
+        let(:params) { { email: 'geralt@rivia.com', password: password } }
+
+        let(:err_details) do
+          [
+            { field: 'email', code: 'no_user_with_such_credentials' },
+            { field: 'password', code: 'no_user_with_such_credentials' }
+          ]
+        end
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when password was missed' do
+        let(:params) { { email: email } }
+
+        let(:err_details) { [{ field: 'password', code: 'required' }] }
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when wrong password was sent' do
+        let(:params) { { email: email, password: "#{password}-gta" } }
+
+        let(:err_details) do
+          [
+            { field: 'email', code: 'no_user_with_such_credentials' },
+            { field: 'password', code: 'no_user_with_such_credentials' }
+          ]
+        end
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
     end
   end
 

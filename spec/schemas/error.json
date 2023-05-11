@@ -34,7 +34,8 @@
               "wrong",
               "already_taken",
               "too_short",
-              "passwords_are_not_equal"
+              "passwords_are_not_equal",
+              "no_user_with_such_credentials"
             ]
           }
         }

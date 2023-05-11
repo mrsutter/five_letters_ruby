@@ -13,7 +13,9 @@ RSpec.shared_examples 'user_response' do
     expect(lang_data['slug']).to eq(language.slug)
     expect(lang_data['name']).to eq(language.name)
 
-    expect(response.headers['Next-Game-Available-At'])
-      .to eq(user.game_available_at.f_iso8601)
+    if with_user_headers
+      expect(response.headers['Next-Game-Available-At'])
+        .to eq(user.game_available_at.f_iso8601)
+    end
   end
 end

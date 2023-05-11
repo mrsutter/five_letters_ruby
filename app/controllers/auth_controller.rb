@@ -2,7 +2,6 @@
 
 class AuthController < ApplicationController
   skip_before_action :authenticate_user!, only: %i[register login refresh]
-  after_action :set_user_headers, only: %i[register]
 
   def register
     result = service_call(
@@ -15,7 +14,11 @@ class AuthController < ApplicationController
   end
 
   def login
-    render json: {}
+    result = service_call(
+      service_class: AuthServices::Login::Service,
+      args: { params: login_params }
+    )
+    render json: TokensBlueprint.render(result[:tokens]), status: 200
   end
 
   def logout

@@ -6,8 +6,8 @@ RSpec.describe 'Users', type: :request do
   describe 'GET /api/v1/profile' do
     let(:url) { '/api/v1/profile' }
     let(:http_method) { :get }
-    let(:params) { nil }
     let(:response_status) { 200 }
+    let(:with_user_headers) { true }
 
     let(:user) { create(:user) }
     let(:language) { user.language }
@@ -105,6 +105,7 @@ RSpec.describe 'Users', type: :request do
 
         describe 'response' do
           let(:response_status) { 200 }
+          let(:with_user_headers) { true }
 
           before do
             put url, params: params, headers: auth_header(token.value)
@@ -125,6 +126,7 @@ RSpec.describe 'Users', type: :request do
 
         describe 'response' do
           let(:response_status) { 200 }
+          let(:with_user_headers) { true }
 
           before do
             put url, params: params, headers: auth_header(token.value)
