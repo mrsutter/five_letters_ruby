@@ -63,7 +63,7 @@ RSpec.describe 'Users', type: :request do
       context 'when unexisting language was sent' do
         let(:params) { { language_id: 'unexisting_id' } }
 
-        let(:err_details) { [{ field: 'language_id', code: 'wrong' }] }
+        let(:err_details) { [{ field: 'language_id', code: 'not_found' }] }
 
         before do
           put url, params: params, headers: auth_header(token.value)
@@ -76,7 +76,7 @@ RSpec.describe 'Users', type: :request do
         let(:language) { create(:language, :unavailable, :ru) }
         let(:params) { { language_id: language.id } }
 
-        let(:err_details) { [{ field: 'language_id', code: 'wrong' }] }
+        let(:err_details) { [{ field: 'language_id', code: 'not_found' }] }
 
         before do
           put url, params: params, headers: auth_header(token.value)

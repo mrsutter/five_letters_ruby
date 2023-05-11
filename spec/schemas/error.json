@@ -22,7 +22,7 @@
           },
           "code": {
             "type": "string",
-            "enum": ["required", "wrong"]
+            "enum": ["required", "not_found"]
           }
         }
       }

@@ -8,7 +8,7 @@ module UserServices
       end
 
       rule(:language_id) do
-        key.failure('wrong') if Language.available.find_by(id: value).blank?
+        key.failure('not_found') if Language.available.find_by(id: value).blank?
       end
     end
   end
