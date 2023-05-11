@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'new_game_response' do
-  it 'returns status 200, correct data and headers' do
+  it 'returns status 201, correct data and headers' do
     expect(response.status).to eq(201)
 
     expect(response).to match_schema('game')

@@ -24,7 +24,11 @@ RSpec/MultipleExpectations:
   Max: 15
 
 RSpec/MultipleMemoizedHelpers:
-  Max: 10
+  Max: 15
 
 RSpec/NestedGroups:
   Max: 5
+
+RSpec/LetSetup:
+  Exclude:
+    - spec/requests/games_spec.rb

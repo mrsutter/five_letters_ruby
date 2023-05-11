@@ -7,8 +7,8 @@ module UserServices
         def call(input)
           language_id = input[:params][:language_id]
 
-          result = input[:user].update(language_id: language_id)
-          Success(result)
+          input[:user].update(language_id: language_id)
+          Success(input)
         end
       end
     end

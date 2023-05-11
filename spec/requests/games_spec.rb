@@ -295,5 +295,89 @@ RSpec.describe 'Games', type: :request do
         it_behaves_like 'input_errors'
       end
     end
+
+    context 'when data is correct' do
+      subject(:request) do
+        post url, params: { word: word }, headers: auth_header(token.value)
+      end
+
+      let(:puzzled_word) { create(:word, language: language, name: 'pizza') }
+
+      context 'when word is not correct and it is not the last attempt' do
+        let!(:game) do
+          create(:game, :with_attempts, word: puzzled_word, user: user, attempts_count: 2)
+        end
+        let!(:word) { create(:word, language: language, name: 'brain').name }
+
+        let(:expected_attempt_number) { 3 }
+        let(:expected_attempt_result) do
+          %w[absence absence wrong_place wrong_place absence]
+        end
+        let(:expected_game_state) { 'active' }
+
+        it_behaves_like 'create_attempt_request'
+      end
+
+      context 'when word is not correct and it is the last attempt' do
+        let!(:game) do
+          create(:game, :with_attempts, word: puzzled_word, user: user, attempts_count: 5)
+        end
+        let!(:word) { create(:word, language: language, name: 'brain').name }
+
+        let(:expected_attempt_number) { 6 }
+        let(:expected_attempt_result) do
+          %w[absence absence wrong_place wrong_place absence]
+        end
+        let(:expected_game_state) { 'wasted' }
+
+        it_behaves_like 'create_attempt_request'
+      end
+
+      context 'when word is correct and it is not the last attempt' do
+        let!(:game) do
+          create(:game, :with_attempts, word: puzzled_word, user: user, attempts_count: 2)
+        end
+        let!(:word) { puzzled_word.name }
+
+        let(:expected_attempt_number) { 3 }
+        let(:expected_attempt_result) do
+          %w[match match match match match]
+        end
+        let(:expected_game_state) { 'won' }
+
+        it_behaves_like 'create_attempt_request'
+      end
+
+      context 'when word is correct and it is the last attempt' do
+        let!(:game) do
+          create(:game, :with_attempts, word: puzzled_word, user: user, attempts_count: 5)
+        end
+        let!(:word) { puzzled_word.name }
+
+        let(:expected_attempt_number) { 6 }
+        let(:expected_attempt_result) do
+          %w[match match match match match]
+        end
+        let(:expected_game_state) { 'won' }
+
+        it_behaves_like 'create_attempt_request'
+      end
+
+      context 'when word is correct, but archived and upcased, and it is first attempt' do
+        let(:puzzled_word) { create(:word, :archived, language: language, name: 'pizza') }
+        let!(:game) do
+          create(:game, :with_attempts, word: puzzled_word, user: user)
+        end
+        let!(:word) { puzzled_word.name.upcase }
+
+        let(:expected_attempt_number) { 1 }
+        let(:expected_attempt_result) do
+          %w[match match match match match]
+        end
+        let(:expected_game_state) { 'won' }
+
+        it_behaves_like 'create_attempt_request'
+      end
+    end
   end
 end

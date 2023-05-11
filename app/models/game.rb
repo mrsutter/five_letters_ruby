@@ -43,7 +43,7 @@ class Game < ApplicationRecord
       waste
     end
 
-    save
+    save!
   end
 
   def puzzled_word
