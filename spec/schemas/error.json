@@ -8,7 +8,13 @@
     },
     "code": {
       "type": "string",
-      "enum": ["unauthorized", "not_found", "input_errors", "too_early", "internal_server_error"]
+      "enum": [
+        "unauthorized",
+        "not_found",
+        "input_errors",
+        "too_early",
+        "internal_server_error"
+      ]
     },
     "message": { "type": "string" },
     "details": {
@@ -22,7 +28,14 @@
           },
           "code": {
             "type": "string",
-            "enum": ["required", "not_found"]
+            "enum": [
+              "required",
+              "not_found",
+              "wrong",
+              "already_taken",
+              "too_short",
+              "passwords_are_not_equal"
+            ]
           }
         }
       }
