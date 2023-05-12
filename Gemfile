@@ -32,6 +32,7 @@ group :test do
   gem 'json-schema'
   gem 'rubocop'
   gem 'rubocop-rspec'
+  gem 'simplecov', require: false
   gem 'string_pattern'
   gem 'timecop'
 end

@@ -1,6 +1,8 @@
 /.bundle
 .DS_Store
 
+/coverage/*
+
 /log/*
 /tmp/*
 !/log/.keep
