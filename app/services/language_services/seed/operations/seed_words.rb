@@ -22,15 +22,15 @@ module LanguageServices
           letters_regexp = Regexp.new(lang.letters)
 
           File.foreach(words_file(lang)) do |line|
-            word = line.chomp.downcase
+            name = line.chomp.downcase
 
-            next if word.length != Word::LENGTH
-            next unless letters_regexp.match?(word)
+            next if name.length != Word::LENGTH
+            next unless letters_regexp.match?(name)
 
-            w = lang.words.find_or_initialize_by(name: word)
-            w.archived = false
-            w.updated_at = Time.current
-            w.save!
+            word = lang.words.find_or_initialize_by(name: name)
+            word.archived = false
+            word.updated_at = Time.current
+            word.save!
           end
         end
 
