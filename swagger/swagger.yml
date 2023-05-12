@@ -1,0 +1,970 @@
+openapi: 3.0.0
+info:
+  title: Five Letters Ruby API
+  version: 1.0.0
+  contact:
+    name: Pavel Iakshankin
+    email: yakspavel@gmail.com
+  license:
+    name: MIT
+    url: http://opensource.org/licenses/MIT
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    FormUpdateProfile:
+      type: object
+      properties:
+        language_id:
+          type: string
+          description: Language Id
+          example: 3e417874-5e04-4d80-9d20-9057e1b483be
+      required:
+        - language_id
+    FormRegisterUser:
+      type: object
+      properties:
+        language_id:
+          type: string
+          description: Language Id
+          example: 3e417874-5e04-4d80-9d20-9057e1b483be
+        email:
+          type: string
+          description: Unique Email
+          example: geralt@rivia.com
+          pattern: '/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/'
+        password:
+          type: string
+          description: Password
+          minLength: 6
+          example: password
+        password_confirmation:
+          type: string
+          description: Password Confirmation
+          minLength: 6
+          example: password
+      required:
+        - language_id
+        - email
+        - password
+        - password_confirmation
+    FormLoginUser:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Unique Email
+          example: geralt@rivia.com
+          pattern: '/^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/'
+        password:
+          type: string
+          description: Password
+          example: password
+      required:
+        - email
+        - password
+    FormCreateAttempt:
+      type: object
+      properties:
+        word:
+          type: string
+          example: lover
+          description: Attempt's Word
+          minLength: 5
+          maxLength: 5
+      required:
+        - word
+    FormRefreshToken:
+      type: object
+      properties:
+        refresh_token:
+          type: string
+          example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTM5NTYxODMsImlhdCI6MTY4MjQyMDE4MywianRpIjoiMjk2NDk3M2EtYTEwMC00ZmY3LWE4NzEtY2U5MTg1YWUyNjRhIiwibmJmIjoxNjgyNDIwMTgzLCJzdWIiOjExMjc5fQ.LTMm77H0R-B19oE61sUhPL8j12nT12WMZuxYtm9JAYxkPDmdYU59CduTipvr5B_rLMnsMV_NKtoKmZzQlbfp4w
+          description: Refresh Token
+      required:
+        - refresh_token
+    ErrorDetailsItem:
+      type: object
+      properties:
+        field:
+          type: string
+          readOnly: true
+          description: Form Field
+        code:
+          type: string
+          readOnly: true
+          description: Form Field Error Code
+          enum: [no_user_with_such_credentials, not_found, already_taken, passwords_are_not_equal, wrong, required, too_short]
+      required:
+        - field
+        - code
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+          readOnly: true
+          description: Error HTTP status
+          example: 500
+          enum: [401, 404, 422, 500]
+        code:
+          type: string
+          readOnly: true
+          description: Error Code
+          example: internal_server_error
+          enum: [unauthorized, not_found, internal_server_error, too_early, input_errors]
+        message:
+          type: string
+          readOnly: true
+          description: Error Message
+          example: ""
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetailsItem'
+          example: []
+      required:
+        - status
+        - code
+    Tokens:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI0MjM3ODMsImlhdCI6MTY4MjQyMDE4MywianRpIjoiN2M3YzVlZDUtYWIxZi00NGI3LWE0MmEtNGNiNmU3OTNjOWM4IiwibmJmIjoxNjgyNDIwMTgzLCJzdWIiOjExMjc5fQ.fIz9YXDI2PwuGtrL_D7EMO-UgFSliv97yIjcm_3eCsLYaWYUS9UZlt5kNjYL1TkVYfB-QzgI-Q_BBOb-l2dXPw
+          readOnly: true
+          description: Unique Access Token
+        refresh_token:
+          type: string
+          example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTM5NTYxODMsImlhdCI6MTY4MjQyMDE4MywianRpIjoiMjk2NDk3M2EtYTEwMC00ZmY3LWE4NzEtY2U5MTg1YWUyNjRhIiwibmJmIjoxNjgyNDIwMTgzLCJzdWIiOjExMjc5fQ.LTMm77H0R-B19oE61sUhPL8j12nT12WMZuxYtm9JAYxkPDmdYU59CduTipvr5B_rLMnsMV_NKtoKmZzQlbfp4w
+          readOnly: true
+          description: Unique Refresh Token
+      required:
+        - access_token
+        - refresh_token
+    GameShort:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 3e417874-5e04-4d80-9d20-9057e1b483be
+          readOnly: true
+          description: Unique Game ID
+        state:
+          type: string
+          example: active
+          enum: [active, wasted, won]
+          readOnly: true
+          description: Game State
+        attempts_count:
+          type: integer
+          example: 0
+          readOnly: true
+          description: Game Attempts Count
+        created_at:
+          type: string
+          example: "2023-05-12T09:49:46.429Z"
+          readOnly: true
+          description: Game Created At (ISO 8601)
+      required:
+        - id
+        - state
+        - attempts_count
+        - created_at
+    Game:
+      allOf:
+        - $ref: '#/components/schemas/GameShort'
+      type: object
+      properties:
+        attempts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attempt'
+    Games:
+      type: array
+      items:
+        $ref: '#/components/schemas/GameShort'
+    Language:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 3e417874-5e04-4d80-9d20-9057e1b483be
+          readOnly: true
+          description: Unique Language ID
+        slug:
+          type: string
+          example: en
+          readOnly: true
+          description: Unique Language Slug
+        name:
+          type: string
+          example: English
+          readOnly: true
+          description: Language Name
+      required:
+        - id
+        - slug
+        - name
+    Attempt:
+      type: object
+      properties:
+        number:
+          type: integer
+          example: 1
+          readOnly: true
+          enum: [1, 2, 3, 4, 5, 6]
+          description: Unique Attempt Number
+        word:
+          type: string
+          example: pizza
+          minLength: 5
+          maxLength: 5
+          description: Attempt Word
+        result:
+          type: array
+          minItems: 5
+          maxItems: 5
+          description: Attempt Result
+          example:
+            - match
+            - wrong_place
+            - wrong_place
+            - absence
+            - match
+          items:
+            type: string
+            example: match
+            enum: [match, wrong_place, absence]
+      required:
+        - number
+        - word
+        - result
+    Languages:
+      type: array
+      items:
+        $ref: '#/components/schemas/Language'
+      uniqueItems: true
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Unique Email
+          example: geralt@rivia.com
+        language:
+          $ref: '#/components/schemas/Language'
+      required:
+        - email
+        - language
+paths:
+  /api/v1/languages:
+    get:
+      tags:
+        - Classifiers
+      summary: Languages List
+      description: Languages list ordered by createdAt
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Languages'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/profile:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Profile
+      summary: User Profile
+      description: User Profile
+      responses:
+        '200':
+          description: OK
+          headers:
+            Next-Game-Available-At:
+              schema:
+                type: string
+              description: DateTime(ISO 8601) when the user will be available to start a new game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: unauthorized
+                message: ""
+                details: []
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      security:
+        - BearerAuth: []
+      tags:
+        - Profile
+      summary: Update User Profile
+      description: Update User Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormUpdateProfile'
+      responses:
+        '200':
+          description: OK
+          headers:
+            Next-Game-Available-At:
+              schema:
+                type: string
+              description: DateTime(ISO 8601) when the user will be available to start a new game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: unauthorized
+                message: ""
+                details: []
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                Missed LanguageId:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: language_id
+                        code: required
+                Wrong LanguageId:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: language_id
+                        code: not_found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register User
+      description: Register User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormRegisterUser'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                All Parameters Missed:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: language_id
+                        code: required
+                      - field: email
+                        code: required
+                      - field: password
+                        code: required
+                      - field: password_confirmation
+                        code: required
+                One Parameter Missed:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: language_id
+                        code: required
+                Password Is Too Short:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: password
+                        code: too_short
+                Password Confirmation Too Short:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: password_confirmation
+                        code: too_short
+                Wrong Email:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: email
+                        code: wrong
+                Email Already Taken:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: email
+                        code: already_taken
+                Password and confirmation are not equal:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: password
+                        code: passwords_are_not_equal
+                      - field: password_confirmation
+                        code: passwords_are_not_equal
+                Wrong LanguageId:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: language_id
+                        code: not_found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login User
+      description: Login User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormLoginUser'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tokens'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                All Parameters Missed:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: email
+                        code: required
+                      - field: password
+                        code: required
+                One Parameter Missed:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: email
+                        code: required
+                Wrong Password or User Doesn't exist:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: email
+                        code: no_user_with_such_credentials
+                      - field: password
+                        code: no_user_with_such_credentials
+                Wrong Email:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: email
+                        code: wrong
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/auth/logout:
+    post:
+      tags:
+        - Auth
+      security:
+        - BearerAuth: []
+      summary: Logout User
+      description: Logout User
+      responses:
+        '204':
+          description: No content
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Refresh User Tokens
+      description: Refresh User Tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormRefreshToken'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tokens'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                Refresh Token Missed:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: refresh_token
+                        code: required
+                Refresh Token Wrong Or Expired:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: refresh_token
+                        code: wrong
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/games:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Games
+      summary: Games List
+      description: Games list ordered by createdAt
+      responses:
+        '200':
+          description: OK
+          headers:
+            Next-Game-Available-At:
+              schema:
+                type: string
+              description: DateTime(ISO 8601) when the user will be available to start a new game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Games'
+              example:
+                - id: 49301015-0386-455b-9b09-aa51cf7f01ba
+                  state: won
+                  attempts_count: 5
+                  created_at: "2023-05-10T09:49:46.429Z"
+                - id: 856fbe50-ece5-4422-8d56-598e14d288d6
+                  state: wasted
+                  attempts_count: 6
+                  created_at: "2023-05-11T10:49:46.429Z"
+                - id: 337a6a2b-05b9-456e-9bab-74e955276539
+                  state: active
+                  attempts_count: 2
+                  created_at: "2023-05-12T11:49:46.429Z"
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: unauthorized
+                message: ""
+                details: []
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      security:
+        - BearerAuth: []
+      tags:
+        - Games
+      summary: Create Game
+      description: Create Game
+      responses:
+        '201':
+          description: OK
+          headers:
+            Next-Game-Available-At:
+              schema:
+                type: string
+              description: DateTime(ISO 8601) when the user will be available to start a new game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+              example:
+                id: 49301015-0386-455b-9b09-aa51cf7f01ba
+                state: active
+                attempts_count: 0
+                created_at: "2023-05-12T09:49:46.429Z"
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: unauthorized
+                message: ""
+                details: []
+        '422':
+          description: Too early
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 422
+                code: too_early
+                message: ""
+                details: []
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/games/{id}:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Games
+      summary: Game Info
+      description: Game Info With Attempts Ordered By Number
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the game
+          example: 49301015-0386-455b-9b09-aa51cf7f01ba
+      responses:
+        '200':
+          description: OK
+          headers:
+            Next-Game-Available-At:
+              schema:
+                type: string
+              description: DateTime(ISO 8601) when the user will be available to start a new game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+              example:
+                id: 49301015-0386-455b-9b09-aa51cf7f01ba
+                state: active
+                attempts_count: 2
+                created_at: "2023-05-12T09:49:46.429Z"
+                attempts:
+                  - number: 1
+                    word: pizza
+                    result:
+                      - absence
+                      - wrong_place
+                      - absence
+                      - match
+                      - match
+                  - number: 2
+                    word: lover
+                    result:
+                      - wrong_place
+                      - wrong_place
+                      - wrong_place
+                      - absence
+                      - match
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: unauthorized
+                message: ""
+                details: []
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 404
+                code: not_found
+                message: ""
+                details: []
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/games/active:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Games
+      summary: Active Game Info
+      description: Active Game Info With Attempts Ordered By Number
+      responses:
+        '200':
+          description: OK
+          headers:
+            Next-Game-Available-At:
+              schema:
+                type: string
+              description: DateTime(ISO 8601) when the user will be available to start a new game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+              example:
+                id: 49301015-0386-455b-9b09-aa51cf7f01ba
+                state: active
+                attempts_count: 2
+                created_at: "2023-05-12T09:49:46.429Z"
+                attempts:
+                  - number: 1
+                    word: pizza
+                    result:
+                      - absence
+                      - wrong_place
+                      - absence
+                      - match
+                      - match
+                  - number: 2
+                    word: lover
+                    result:
+                      - wrong_place
+                      - wrong_place
+                      - wrong_place
+                      - absence
+                      - match
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: unauthorized
+                message: ""
+                details: []
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 404
+                code: not_found
+                message: ""
+                details: []
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/games/active/attempts:
+    post:
+      security:
+        - BearerAuth: []
+      tags:
+        - Games
+      summary: Create Game Attempt
+      description: Create Game Attempt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormCreateAttempt'
+      responses:
+        '201':
+          description: OK
+          headers:
+            Next-Game-Available-At:
+              schema:
+                type: string
+              description: DateTime(ISO 8601) when the user will be available to start a new game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+              example:
+                id: 49301015-0386-455b-9b09-aa51cf7f01ba
+                state: active
+                attempts_count: 2
+                created_at: "2023-05-12T09:49:46.429Z"
+                attempts:
+                  - number: 1
+                    word: pizza
+                    result:
+                      - absence
+                      - wrong_place
+                      - absence
+                      - match
+                      - match
+                  - number: 2
+                    word: lover
+                    result:
+                      - absence
+                      - wrong_place
+                      - absence
+                      - match
+                      - match
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: unauthorized
+                message: ""
+                details: []
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 404
+                code: not_found
+                message: ""
+                details: []
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                Word Missed:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: word
+                        code: required
+                Wrong Word:
+                  value:
+                    status: 422
+                    code: input_errors
+                    message: ""
+                    details:
+                      - field: word
+                        code: wrong
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
