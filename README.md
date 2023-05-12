@@ -13,5 +13,7 @@ The API is designed to be easily integrated with mobile applications and can be 
 ## Stack of technologies
 
  - Ruby on Rails
+ - dry-rb
  - PostgreSQL
+ - sidekiq
  - rspec (BDD)
