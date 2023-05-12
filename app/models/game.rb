@@ -15,6 +15,7 @@ class Game < ApplicationRecord
   validates :user, uniqueness: { scope: :state, conditions: -> { active } }
 
   scope :ordered, -> { order(:created_at) }
+  scope :outdated, -> { where('created_at < ?', Time.current - LIFECYCLE_HOURS.hours) }
 
   aasm column: :state do
     state :active, initial: true

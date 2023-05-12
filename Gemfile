@@ -19,6 +19,7 @@ gem 'puma', '~> 5.0'
 gem 'rack-cors'
 gem 'rails', '~> 7.0.4', '>= 7.0.4.3'
 gem 'redis'
+gem 'rufus-scheduler'
 gem 'sidekiq', '~> 6.5.5'
 
 group :development, :test do

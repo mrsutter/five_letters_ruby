@@ -1,6 +1,5 @@
 ---
 :concurrency: <%= ENV.fetch('FL_RUBY_SIDEKIQ_CONCURRENCY') %>
-:logfile: ./log/sidekiq.log
 :queues:
   - default
 

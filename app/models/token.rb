@@ -8,4 +8,6 @@ class Token < ApplicationRecord
   validates :jti, presence: true, uniqueness: true
 
   attribute :value, :string
+
+  scope :expired, -> { where('expired_at < ?', Time.current) }
 end
