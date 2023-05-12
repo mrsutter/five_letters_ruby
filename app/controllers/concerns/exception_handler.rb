@@ -4,7 +4,8 @@ module ExceptionHandler
   extend ActiveSupport::Concern
 
   included do
-    rescue_from StandardError do
+    rescue_from StandardError do |e|
+      logger.error(e)
       render_error(status: 500, code: :internal_server_error)
     end
 
