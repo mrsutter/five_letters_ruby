@@ -25,22 +25,6 @@ RSpec.describe 'Auth', type: :request do
         it_behaves_like 'input_errors'
       end
 
-      context 'when all params were missed' do
-        let(:params) { {} }
-        let(:err_details) do
-          [
-            { field: 'email', code: 'required' },
-            { field: 'password', code: 'required' },
-            { field: 'password_confirmation', code: 'required' },
-            { field: 'language_id', code: 'required' }
-          ]
-        end
-
-        before { post url, params: params }
-
-        it_behaves_like 'input_errors'
-      end
-
       context 'when empty body was sent' do
         let(:err_details) do
           [
@@ -303,20 +287,6 @@ RSpec.describe 'Auth', type: :request do
         it_behaves_like 'input_errors'
       end
 
-      context 'when all params were missed' do
-        let(:params) { {} }
-        let(:err_details) do
-          [
-            { field: 'email', code: 'required' },
-            { field: 'password', code: 'required' }
-          ]
-        end
-
-        before { post url, params: params }
-
-        it_behaves_like 'input_errors'
-      end
-
       context 'when empty body was sent' do
         let(:err_details) do
           [
@@ -413,43 +383,14 @@ RSpec.describe 'Auth', type: :request do
       before { Timecop.freeze }
       after { Timecop.return }
 
-      it 'responds with status 200 and correct data' do
-        post url, params: params
-
-        expect(response.status).to eq(200)
-        expect(response.headers['Next-Game-Available-At']).to be_nil
-
-        access_token_value = body['access_token']
-        refresh_token_value = body['refresh_token']
-
-        expect(access_token_value).to be_present
-        expect(refresh_token_value).to be_present
-      end
-
-      it 'saves refresh token in db correctly' do
+      it 'saves new tokens in db' do
         expect { post url, params: params }
           .to change { user.reload.access_tokens.count }.by(1)
           .and change { user.refresh_tokens.count }.by(1)
-
-        _, refresh_token_jti = JwtToken.decode(
-          value: body['refresh_token'],
-          public_key: Tokens::RefreshToken::PUB_KEY
-        )
-        refresh_token = Tokens::RefreshToken.find_by(jti: refresh_token_jti)
-        expect(refresh_token).to be_present
-        expect(refresh_token.user).to eq(user)
-        expect(refresh_token.expired_at).to eq(Time.current + Tokens::RefreshToken::TTL)
-
-        _, access_token_jti = JwtToken.decode(
-          value: body['access_token'],
-          public_key: Tokens::AccessToken::PUB_KEY
-        )
-        access_token = Tokens::AccessToken.find_by(jti: access_token_jti)
-        expect(access_token).to be_present
-        expect(access_token.user).to eq(user)
-        expect(access_token.refresh_token).to eq(refresh_token)
-        expect(access_token.expired_at).to eq(Time.current + Tokens::AccessToken::TTL)
       end
+
+      include_examples 'tokens_response'
+      include_examples 'saves_tokens_correctly'
     end
   end
 
@@ -465,9 +406,90 @@ RSpec.describe 'Auth', type: :request do
   describe 'POST /api/v1/auth/refresh' do
     let(:url) { '/api/v1/auth/refresh' }
 
-    it 'returns сorrect status' do
-      post url
-      expect(response.status).to eq(200)
+    let(:user) { create(:user) }
+
+    context 'when data is not correct' do
+      context 'when incorrect body was sent' do
+        let(:params) { 'wrong body' }
+        let(:err_details) { [{ field: 'refresh_token', code: 'required' }] }
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when empty body was sent' do
+        let(:err_details) { [{ field: 'refresh_token', code: 'required' }] }
+
+        before { post url }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when empty string was sent' do
+        let(:params) { { refresh_token: '' } }
+
+        let(:err_details) { [{ field: 'refresh_token', code: 'required' }] }
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when wrong token was sent' do
+        let(:params) { { refresh_token: 'wrong token' } }
+
+        let(:err_details) { [{ field: 'refresh_token', code: 'wrong' }] }
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when expired token was sent' do
+        let(:token) { create(:refresh_token, :expired, user: user) }
+        let(:params) { { refresh_token: token.value } }
+
+        let(:err_details) { [{ field: 'refresh_token', code: 'wrong' }] }
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
+
+      context 'when not_allowed token was sent' do
+        let(:token) { build(:refresh_token, user: user) }
+        let(:params) { { refresh_token: token.value } }
+
+        let(:err_details) { [{ field: 'refresh_token', code: 'wrong' }] }
+
+        before { post url, params: params }
+
+        it_behaves_like 'input_errors'
+      end
+    end
+
+    context 'when data is correct' do
+      let(:token) { create(:refresh_token, user: user) }
+      let!(:access_token) { create(:access_token, user: user, refresh_token: token) }
+
+      let(:params) { { refresh_token: token.value } }
+
+      before { Timecop.freeze }
+      after { Timecop.return }
+
+      include_examples 'tokens_response'
+      include_examples 'saves_tokens_correctly'
+
+      it 'destroys old tokens' do
+        post url, params: params
+
+        old_access_token = Tokens::AccessToken.find_by(jti: access_token.jti)
+        old_refresh_token = Tokens::RefreshToken.find_by(jti: token.jti)
+
+        expect(old_access_token).to be_blank
+        expect(old_refresh_token).to be_blank
+      end
     end
   end
 end

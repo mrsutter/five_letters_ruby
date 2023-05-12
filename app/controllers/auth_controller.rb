@@ -24,7 +24,11 @@ class AuthController < ApplicationController
   end
 
   def refresh
-    render json: {}
+    result = service_call(
+      service_class: AuthServices::Refresh::Service,
+      args: { params: refresh_params }
+    )
+    render json: TokensBlueprint.render(result[:tokens])
   end
 
   private
