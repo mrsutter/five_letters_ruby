@@ -401,6 +401,34 @@ RSpec.describe 'Auth', type: :request do
     let(:user) { create(:user) }
 
     include_examples 'unauthorized_request'
+
+    context 'when token is correct' do
+      let(:refresh_token) { create(:refresh_token, user: user) }
+      let!(:access_token) do
+        create(:access_token, user: user, refresh_token: refresh_token)
+      end
+
+      it 'destroys old tokens' do
+        expect { post url, headers: auth_header(access_token.value) }
+          .to change { user.reload.access_tokens.count }.by(-1)
+          .and change { user.refresh_tokens.count }.by(-1)
+
+        old_access_token = Tokens::AccessToken.find_by(jti: access_token.jti)
+        old_refresh_token = Tokens::RefreshToken.find_by(jti: refresh_token.jti)
+
+        expect(old_access_token).to be_blank
+        expect(old_refresh_token).to be_blank
+      end
+
+      it 'returns correct status, data and headers' do
+        post url, headers: auth_header(access_token.value)
+
+        expect(response.status).to eq(204)
+        expect(response.body).to be_blank
+
+        expect(response.headers['Next-Game-Available-At']).to be_nil
+      end
+    end
   end
 
   describe 'POST /api/v1/auth/refresh' do

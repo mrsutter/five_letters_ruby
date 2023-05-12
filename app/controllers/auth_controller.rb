@@ -20,7 +20,9 @@ class AuthController < ApplicationController
   end
 
   def logout
-    render json: {}, status: 204
+    refresh_token = token.refresh_token
+    refresh_token.destroy!
+    head :no_content
   end
 
   def refresh
