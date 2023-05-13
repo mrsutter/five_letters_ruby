@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Language < ApplicationRecord
-  has_many :words
+  has_many :words, dependent: :restrict_with_exception
 
   validates :slug, presence: true, uniqueness: true
   validates :name, presence: true

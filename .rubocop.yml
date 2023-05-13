@@ -1,4 +1,6 @@
-require: rubocop-rspec
+require:
+  - rubocop-rails
+  - rubocop-rspec
 
 AllCops:
   Exclude:
@@ -19,6 +21,10 @@ Metrics/MethodLength:
 Metrics/AbcSize:
   Exclude:
     - app/models/attempt.rb
+
+Rails/SkipsModelValidations:
+  Exclude:
+    - app/services/language_services/seed/operations/seed_words.rb
 
 RSpec/ExampleLength:
   Max: 20

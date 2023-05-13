@@ -21,7 +21,7 @@ class GamesController < ApplicationController
       service_class: GameServices::Create::Service,
       args: { user: current_user }
     )
-    render json: GameBlueprint.render(result[:game], view: :show), status: 201
+    render json: GameBlueprint.render(result[:game], view: :show), status: :created
   end
 
   def create_attempt
@@ -29,7 +29,7 @@ class GamesController < ApplicationController
       service_class: GameServices::CreateAttempt::Service,
       args: { game: active_game, params: attempt_params }
     )
-    render json: GameBlueprint.render(result[:game], view: :show), status: 201
+    render json: GameBlueprint.render(result[:game], view: :show), status: :created
   end
 
   private

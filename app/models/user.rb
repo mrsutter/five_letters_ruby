@@ -6,10 +6,14 @@ class User < ApplicationRecord
   has_secure_password
 
   belongs_to :language
-  has_many :games
+  has_many :games, dependent: :restrict_with_exception
 
-  has_many :access_tokens, class_name: 'Tokens::AccessToken'
-  has_many :refresh_tokens, class_name: 'Tokens::RefreshToken'
+  has_many :access_tokens,
+           class_name: 'Tokens::AccessToken',
+           dependent: :destroy
+  has_many :refresh_tokens,
+           class_name: 'Tokens::RefreshToken',
+           dependent: :destroy
 
   validates :email,
             presence: true,

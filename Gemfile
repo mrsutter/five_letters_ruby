@@ -31,7 +31,8 @@ group :test do
   gem 'factory_bot_rails'
   gem 'json-schema'
   gem 'rubocop'
-  gem 'rubocop-rspec'
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
   gem 'simplecov', require: false
   gem 'string_pattern'
   gem 'timecop'
