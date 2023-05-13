@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
-return if defined?(Rails::Console) || Rails.env.test? || File.split($PROGRAM_NAME).last == 'rake'
+no_need_to_run_scheduler = defined?(Rails::Console) ||
+                           Rails.env.test? ||
+                           File.split($PROGRAM_NAME).last == 'rake' ||
+                           File.split($PROGRAM_NAME).last == 'sidekiq'
+
+return if no_need_to_run_scheduler
 
 scheduler = Rufus::Scheduler.singleton
 
