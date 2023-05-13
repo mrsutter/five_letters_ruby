@@ -16,4 +16,8 @@ The API is designed to be easily integrated with mobile applications and can be 
  - dry-rb
  - PostgreSQL
  - sidekiq
- - rspec (BDD)
+ - rspec
+
+## Links
+ - [Base Api Url](https://fl-ruby.iakshankin.site/)
+ - [Swagger](https://fl-ruby.iakshankin.site/swagger)
