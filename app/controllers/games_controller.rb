@@ -8,7 +8,7 @@ class GamesController < ApplicationController
   end
 
   def show
-    game = games.find_by!(id: params[:id])
+    game = games.find(params[:id])
     render json: GameBlueprint.render(game, view: :show)
   end
 
